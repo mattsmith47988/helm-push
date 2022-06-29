@@ -32,7 +32,7 @@ if [ "$USE_OCI_REGISTRY" == "TRUE" ] || [ "$USE_OCI_REGISTRY" == "true" ]; then
   REGISTRY_URL=$(echo "${REGISTRY_URL#*//}")
   helm package ${CHART_FOLDER} # Save the chart, using tag from the chart
   #FULLPACKAGEREF=$(helm chart list | sed '2q;d' | cut -d' ' -f1) # Get full package reference from newly saved chart
-  helm push $(ls | grep .tgz) ${REGISTRY_URL} # Push chart to registry
+  helm push $(ls | grep .tgz) oci://${REGISTRY_URL} # Push chart to registry
   exit 0
 fi
 
