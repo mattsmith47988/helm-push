@@ -24,24 +24,6 @@ else
   FORCE=""
 fi
 
-if [ "$USE_OCI_REGISTRY" == "TRUE" ] || [ "$USE_OCI_REGISTRY" == "true" ]; then
-  export HELM_EXPERIMENTAL_OCI=1
-  echo "OCI SPECIFIED, USING HELM OCI FEATURES"
-  REGISTRY=$(echo "${REGISTRY_URL}" | awk -F[/:] '{print $4}') # Get registry host from url
-  echo "${REGISTRY_ACCESS_TOKEN}" | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY} # Authenticate registry
-  REGISTRY_URL=$(echo "${REGISTRY_URL#*//}")
-  helm package ${CHART_FOLDER} # Save the chart, using tag from the chart
-  #FULLPACKAGEREF=$(helm chart list | sed '2q;d' | cut -d' ' -f1) # Get full package reference from newly saved chart
-  helm push $(ls | grep .tgz) oci://${REGISTRY_URL} # Push chart to registry
-  exit 0
-fi
-
-if [ "$REGISTRY_ACCESS_TOKEN" ]; then
-  echo "Access token is defined, using bearer auth."
-  REGISTRY_ACCESS_TOKEN="--access-token ${REGISTRY_ACCESS_TOKEN}"
-fi
-
-
 if [ "$REGISTRY_USERNAME" ]; then
   echo "Username is defined, using as parameter."
   REGISTRY_USERNAME="--username ${REGISTRY_USERNAME}"
@@ -56,6 +38,26 @@ if [ "$REGISTRY_VERSION" ]; then
   echo "Version is defined, using as parameter."
   REGISTRY_VERSION="--version ${REGISTRY_VERSION}"
 fi
+
+if [ "$USE_OCI_REGISTRY" == "TRUE" ] || [ "$USE_OCI_REGISTRY" == "true" ]; then
+  export HELM_EXPERIMENTAL_OCI=1
+  echo "OCI SPECIFIED, USING HELM OCI FEATURES"
+  REGISTRY=$(echo "${REGISTRY_URL}" | awk -F[/:] '{print $4}') # Get registry host from url
+  echo "${REGISTRY_ACCESS_TOKEN}" | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY} # Authenticate registry
+  REGISTRY_URL=$(echo "${REGISTRY_URL#*//}")
+  helm package ${CHART_FOLDER} ${REGISTRY_VERSION} # Save the chart, using tag from the chart
+  #FULLPACKAGEREF=$(helm chart list | sed '2q;d' | cut -d' ' -f1) # Get full package reference from newly saved chart
+  helm push $(ls | grep .tgz) oci://${REGISTRY_URL} # Push chart to registry
+  exit 0
+fi
+
+if [ "$REGISTRY_ACCESS_TOKEN" ]; then
+  echo "Access token is defined, using bearer auth."
+  REGISTRY_ACCESS_TOKEN="--access-token ${REGISTRY_ACCESS_TOKEN}"
+fi
+
+
+
 
 if [ "$REGISTRY_APPVERSION" ]; then
   echo "App version is defined, using as parameter."
