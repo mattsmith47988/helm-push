@@ -24,21 +24,6 @@ else
   FORCE=""
 fi
 
-if [ "$REGISTRY_USERNAME" ]; then
-  echo "Username is defined, using as parameter."
-  REGISTRY_USERNAME="--username ${REGISTRY_USERNAME}"
-fi
-
-if [ "$REGISTRY_PASSWORD" ]; then
-  echo "Password is defined, using as parameter."
-  REGISTRY_PASSWORD="--password ${REGISTRY_PASSWORD}"
-fi
-
-if [ "$REGISTRY_VERSION" ]; then
-  echo "Version is defined, using as parameter."
-  REGISTRY_VERSION="--version ${REGISTRY_VERSION}"
-fi
-
 if [ "$USE_OCI_REGISTRY" == "TRUE" ] || [ "$USE_OCI_REGISTRY" == "true" ]; then
   export HELM_EXPERIMENTAL_OCI=1
   echo "OCI SPECIFIED, USING HELM OCI FEATURES"
@@ -57,7 +42,20 @@ if [ "$REGISTRY_ACCESS_TOKEN" ]; then
 fi
 
 
+if [ "$REGISTRY_USERNAME" ]; then
+  echo "Username is defined, using as parameter."
+  REGISTRY_USERNAME="--username ${REGISTRY_USERNAME}"
+fi
 
+if [ "$REGISTRY_PASSWORD" ]; then
+  echo "Password is defined, using as parameter."
+  REGISTRY_PASSWORD="--password ${REGISTRY_PASSWORD}"
+fi
+
+if [ "$REGISTRY_VERSION" ]; then
+  echo "Version is defined, using as parameter."
+  REGISTRY_VERSION="--version ${REGISTRY_VERSION}"
+fi
 
 if [ "$REGISTRY_APPVERSION" ]; then
   echo "App version is defined, using as parameter."
